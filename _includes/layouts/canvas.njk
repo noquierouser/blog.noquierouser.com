@@ -1,0 +1,11 @@
+---
+layout: layouts/post.njk
+mainClass: lienzo
+---
+{#-
+Lienzo: igual que un post (cabecera, pie, fecha, tags), pero el <main> usa todo el ancho.
+El texto normal sigue en la columna de lectura; lo que quieras a todo el ancho va dentro
+de un elemento con la clase `ancho`. El CSS y JS propios se agregan con <style>/<script>
+en el mismo post, con {% css %}/{% js %}, o con `css:`/`js:` en el front matter.
+-#}
+{{ content | safe }}

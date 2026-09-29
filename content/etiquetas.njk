@@ -1,0 +1,16 @@
+---js
+const title = "Etiquetas";
+const eleventyNavigation = {
+	key: "etiquetas",
+	order: 2
+};
+---
+<h1>Etiquetas</h1>
+
+<div class="nube-tags">
+{%- for tag in collections | getKeys | filterTagList | sortAlphabetically %}
+	{%- if collections[tag].length %}
+	<a class="sticker tag" href="/etiquetas/{{ tag | slugify }}/">#{{ tag }} <small>{{ collections[tag].length }}</small></a>
+	{%- endif %}
+{%- endfor %}
+</div>

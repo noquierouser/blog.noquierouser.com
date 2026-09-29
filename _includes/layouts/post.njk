@@ -1,0 +1,36 @@
+---
+layout: layouts/base.njk
+---
+{# El resaltado de código solo se carga en los posts #}
+<style>{% include "node_modules/prismjs/themes/prism-okaidia.css" %}</style>
+<style>{% include "css/prism-diff.css" %}</style>
+
+<article class="post">
+	<header class="post-cabeza">
+		<p class="meta"><time datetime="{{ page.date | htmlDateString }}">{{ page.date | readableDate }}</time> · {{ content | readingTime }} min de lectura</p>
+		<h1>{{ title }}</h1>
+		{%- set tagList = tags | filterTagList %}
+		{%- if tagList.length %}
+		<div class="tags">
+			{%- for tag in tagList %}
+			<a class="sticker tag" href="/etiquetas/{{ tag | slugify }}/">#{{ tag }}</a>
+			{%- endfor %}
+		</div>
+		{%- endif %}
+	</header>
+
+	<heading-anchors class="prosa">
+		{{ content | safe }}
+	</heading-anchors>
+</article>
+
+{%- if collections.posts %}
+{%- set previousPost = collections.posts | getPreviousCollectionItem %}
+{%- set nextPost = collections.posts | getNextCollectionItem %}
+{%- if nextPost or previousPost %}
+<nav class="post-pie" aria-label="Otros posts">
+	{%- if previousPost %}<a href="{{ previousPost.url }}"><span class="meta">← anterior</span>{{ previousPost.data.title }}</a>{% else %}<span></span>{% endif %}
+	{%- if nextPost %}<a class="siguiente" href="{{ nextPost.url }}"><span class="meta">siguiente →</span>{{ nextPost.data.title }}</a>{% endif %}
+</nav>
+{%- endif %}
+{%- endif %}

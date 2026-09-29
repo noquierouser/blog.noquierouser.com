@@ -1,0 +1,55 @@
+---js
+const title = "";
+const numberWithExcerpt = 3;
+const numberWithoutExcerpt = 5;
+---
+<section class="intro">
+	{#- Lo que tenga data-solo="girlmode" o data-solo="boymode" solo se ve en ese modo #}
+	<p class="mano" data-solo="girlmode">hola, pasa no más ♡</p>
+	<p class="mano" data-solo="boymode">hola, pasa no más</p>
+	<p>Este es mi cuaderno público. Escribo sobre <mark>Linux, docencia, cosas que rompo</mark> y lo que se me ocurra entre medio. Algunas páginas son experimentos: pueden traer juguetes, gráficos o cosas que no funcionan en ningún otro lado.</p>
+</section>
+
+{%- set pinned = collections.posts | pinnedPost %}
+{%- set newest = collections.posts | newestWithout(pinned) %}
+
+{%- if pinned %}
+<article class="fijado">
+	<span class="sticker">fijado</span>
+	<p class="meta"><time datetime="{{ pinned.date | htmlDateString }}">{{ pinned.date | readableDate }}</time> · {{ pinned.content | readingTime }} min</p>
+	<h2><a href="{{ pinned.url }}">{{ pinned.data.title }}</a></h2>
+	<p>{{ pinned.data.description or (pinned.content | excerpt) }}</p>
+</article>
+{%- endif %}
+
+{%- if newest.length %}
+<h2 class="seccion-titulo">lo último</h2>
+<div class="recientes">
+	{%- for post in newest | head(numberWithExcerpt) %}
+	<article class="reciente">
+		<p class="meta"><time datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate }}</time> · {{ post.content | readingTime }} min
+			{%- if post.date | isNew %} <span class="sticker">nuevo!</span>{% endif %}
+			{%- if post.data.layout == "layouts/canvas.njk" or post.data.layout === false %} <span class="sticker claro">experimento</span>{% endif %}</p>
+		<h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+		<p>{{ post.data.description or (post.content | excerpt) }}</p>
+		<a class="leer" href="{{ post.url }}">seguir leyendo →</a>
+	</article>
+	{%- endfor %}
+</div>
+{%- endif %}
+
+{%- set older = newest | sliceItems(numberWithExcerpt, numberWithExcerpt + numberWithoutExcerpt) %}
+{%- if older.length %}
+<h2 class="seccion-titulo">más atrás</h2>
+<ul class="lista">
+	{%- for post in older %}
+	<li><a href="{{ post.url }}">{{ post.data.title }}</a><time class="meta" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate }}</time></li>
+	{%- endfor %}
+</ul>
+{%- endif %}
+
+{%- if collections.posts.length %}
+<p class="archivo"><a href="/archivo/">ver todo el archivo →</a></p>
+{%- else %}
+<p class="vacio">Todavía no hay nada publicado. Pronto.</p>
+{%- endif %}

@@ -1,0 +1,68 @@
+{%- set modoActual = modo or metadata.modo %}
+<!doctype html>
+<html lang="{{ metadata.language }}" data-modo="{{ modoActual }}" data-modo-sitio="{{ metadata.modo }}"{% if modo %} data-modo-fijo{% endif %}>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{% if title %}{{ title }} · {% endif %}{{ metadata.title }}</title>
+		<meta name="description" content="{{ description or metadata.description }}">
+		<meta name="theme-color" content="{% if modoActual == 'boymode' %}#f4f3ee{% else %}#fbf6ea{% endif %}">
+		{#- Va antes del CSS para que no parpadee la paleta equivocada #}
+		<script eleventy:ignore>{% include "modo-inicio.js" %}</script>
+		{#- Vista previa en redes: con el modo de la página si tiene uno, si no con el del sitio #}
+		<meta property="og:site_name" content="{{ metadata.title }}">
+		<meta property="og:title" content="{{ title or metadata.title }}">
+		<meta property="og:description" content="{{ description or metadata.description }}">
+		<meta property="og:url" content="{{ page.url | htmlBaseUrl(metadata.url) }}">
+		<meta property="og:type" content="{% if 'posts' in (tags or []) %}article{% else %}website{% endif %}">
+		<meta property="og:locale" content="es_CL">
+		<meta property="og:image" content="{{ ('/img/tarjeta-' + modoActual + '.png') | htmlBaseUrl(metadata.url) }}">
+		<meta property="og:image:width" content="1200">
+		<meta property="og:image:height" content="630">
+		<meta name="twitter:card" content="summary_large_image">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="{{ metadata.title }}">
+		<link rel="preload" href="/fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+		<link rel="preload" href="/fonts/adornos-{{ modoActual }}.woff2" as="font" type="font/woff2" crossorigin>
+
+		{#- CSS del sitio. Cualquier <style> o {% css %} de una página se suma a este bundle. #}
+		<style>{% include "css/fonts.css" %}</style>
+		<style>{% include "css/index.css" %}</style>
+		<style>{% getBundle "css" %}</style>
+
+		{#- Hojas de estilo extra declaradas en el front matter (`css: [...]`) #}
+		{%- for href in css %}
+		<link rel="stylesheet" href="{{ href }}">
+		{%- endfor %}
+
+		<script type="module">{% include "node_modules/@zachleat/heading-anchors/heading-anchors.js" %}</script>
+	</head>
+	<body{% if bodyClass %} class="{{ bodyClass }}"{% endif %}>
+		<a href="#main" id="skip-link" class="visually-hidden">Saltar al contenido</a>
+
+		<header class="cabecera hoja">
+			{%- include "marca.njk" %}
+			<div class="ondas" aria-hidden="true"></div>
+			<nav class="menu" aria-label="Principal">
+				{%- for entry in collections.all | eleventyNavigation %}
+				<a href="{{ entry.url }}"{% if entry.url == page.url %} aria-current="page"{% endif %}>{{ entry.title }}</a>
+				{%- endfor %}
+			</nav>
+		</header>
+
+		<main id="main" class="{{ mainClass or 'hoja' }}">
+			{{ content | safe }}
+		</main>
+
+		<footer class="pie hoja">
+			<span><span class="estrella" aria-hidden="true"></span> blog.noquierouser.com</span>
+			<span>hecho a mano con <a href="https://www.11ty.dev/">Eleventy</a> · <a href="/feed/feed.xml">rss</a></span>
+		</footer>
+
+		<script eleventy:ignore>{% include "modo-secreto.js" %}</script>
+		<script type="module" src="{% getBundleFileUrl "js" %}"></script>
+		{#- Scripts extra declarados en el front matter (`js: [...]`) #}
+		{%- for src in js %}
+		<script type="module" src="{{ src }}"></script>
+		{%- endfor %}
+	</body>
+</html>

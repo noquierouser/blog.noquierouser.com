@@ -1,0 +1,30 @@
+---js
+const pagination = {
+	data: "collections",
+	size: 1,
+	alias: "tag",
+	filter: ["all", "posts"],
+	// Sin páginas para etiquetas que solo usan borradores
+	before: (tags, data) => tags.filter(tag => data.collections[tag].length > 0),
+};
+
+const eleventyExcludeFromCollections = true;
+
+const eleventyComputed = {
+	title: "#{{ tag }}",
+	permalink: function(data) {
+		// Si aparece DuplicatePermalinkOutputError, revisa que no haya
+		// una etiqueta escrita con distintas mayúsculas, como "Linux" y "linux".
+		return `/etiquetas/${this.slugify(data.tag)}/`;
+	}
+};
+---
+<h1><span class="sticker tag">#{{ tag }}</span></h1>
+
+<ul class="lista">
+	{%- for post in collections[tag] | reverse %}
+	<li><a href="{{ post.url }}">{{ post.data.title }}</a><time class="meta" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate }}</time></li>
+	{%- endfor %}
+</ul>
+
+<p class="archivo"><a href="/etiquetas/">todas las etiquetas →</a></p>

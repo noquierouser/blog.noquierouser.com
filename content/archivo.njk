@@ -1,0 +1,19 @@
+---js
+const title = "Archivo";
+const eleventyNavigation = {
+	key: "archivo",
+	order: 1
+};
+---
+<h1>Archivo</h1>
+
+{%- for group in collections.posts | groupByYear %}
+<h2 class="seccion-titulo">{{ group.year }}</h2>
+<ul class="lista">
+	{%- for post in group.posts %}
+	<li><a href="{{ post.url }}">{{ post.data.title }}</a><time class="meta" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate("d LLL") }}</time></li>
+	{%- endfor %}
+</ul>
+{%- else %}
+<p class="vacio">Todavía no hay nada publicado.</p>
+{%- endfor %}
